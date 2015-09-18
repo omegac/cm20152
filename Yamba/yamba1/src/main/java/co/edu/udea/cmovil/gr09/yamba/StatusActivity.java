@@ -2,6 +2,7 @@ package co.edu.udea.cmovil.gr09.yamba;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -48,6 +49,11 @@ public class StatusActivity extends Activity implements View.OnClickListener {
                 }
                 int count = 140 - s.length();
                 mTextCount.setText(Integer.toString(count));
+                mTextCount.setTextColor(Color.GREEN);
+                if (count < 10)
+                    mTextCount.setTextColor(Color.RED);
+                else
+                    mTextCount.setTextColor(mDefaultColor);
             }
 
             @Override
@@ -79,8 +85,6 @@ public class StatusActivity extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         String status = mTextStatus.getText().toString();
         PostTask postTask = new PostTask();
-        mTextStatus.setText("");
-        mButtonTweet.setClickable(false);
         mTextStatus.clearFocus();
         postTask.execute(status);
         Log.d(TAG, "onClicked");
