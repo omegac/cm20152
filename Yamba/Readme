@@ -1,0 +1,13 @@
+3. a) son muy diferentes, wrap_content despliega el contenido, mientras match_parent ajusta el
+contenido a el espacio en el que está de forma que coincida con el padre.
+    b) Se utiliza el wrap_content en el botón pues sólo se necesita que el botón sea visible en su
+     tamaño normal, igual que en el TexView; mientras que en el EditText se usa match_parent pues se
+      requiere poder ver la totalidad del texto que se ingrese.
+c) el id permite que desde la parte lógica de la aplicación, se pueda identificar cada elemento para
+poder manipularlo.
+
+4) Es la que hace el trabajo de enlazar la parte lógica con la parte gráfica. El archivo XML que
+ va a mostrarse cuando se mande a llamar la clase "MainActivity" es el archivo XML llamado
+ "activity_main".
+
+ 6) findViewById permite encontrar un elemento xml por medio del id.
