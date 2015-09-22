@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Yamba</string>
+    <string name="app_name">Yamba Gr9</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -11,4 +11,5 @@
     <string name="password">Password</string>
     <string name="password_summary">How do you log in?</string>
     <string name="status_update">Status Update</string>
+
 </resources>
