@@ -1,8 +1,10 @@
 package co.edu.udea.cmovil.gr09.yamba;
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,7 +34,6 @@ public class RefreshService extends IntentService {
     //public static final String EXTRA_PARAM2 = "co.edu.udea.cmovil.gr09.yamba.extra.PARAM2";
 
     private static final String TAG = RefreshService.class.getSimpleName();
-
     boolean isEmpty;
 
     public RefreshService() {
@@ -47,31 +48,42 @@ public class RefreshService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(TAG, "onStarted");
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(this); //*
-        final String username = prefs.getString("username", ""); //*
-        final String password = prefs.getString("password", ""); //*
+        if (intent != null) {
+            Log.d(TAG, "onStarted");
+            SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(this); //*
+            final String username = prefs.getString("username", ""); //*
+            final String password = prefs.getString("password", ""); //*
 
-        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-            boolean isEmpty = true;
-            return;
-        } //Verificar que no hayan campos vacíos
+            if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+                isEmpty = true;
+                return;
+            } //Verificar que no hayan campos vacíos
 
-        YambaClient cloud = new YambaClient(username, password); /*Se crea un nuevo
+            DbHelper dbHelper = new DbHelper(this);
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            YambaClient cloud = new YambaClient(username, password); /*Se crea un nuevo
     cliente yamba*/
-        try {
-            List<YambaStatus> timeline = cloud.getTimeline(20); /* Obtener linea de
+            try {
+                List<YambaStatus> timeline = cloud.getTimeline(20); /* Obtener linea de
        tiempo, los últimos 20 estados*/
-            for (YambaStatus status : timeline) { //
-                Log.d(TAG,
-                        String.format("%s: %s", status.getUser(), status.getMessage())); //Imprimir estados en consola
+                for (YambaStatus status : timeline) { //
+                    Log.d(TAG,
+                            String.format("%s: %s", status.getUser(), status.getMessage())); //Imprimir estados en consola
+                    values.clear();
+                    values.put(StatusContract.Column.ID, status.getId());
+                    values.put(StatusContract.Column.USER, status.getUser());
+                    values.put(StatusContract.Column.MESSAGE, status.getMessage());
+                    values.put(StatusContract.Column.CREATED_AT, status.getCreatedAt().getTime());
+                    db.insertWithOnConflict(StatusContract.TABLE, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+                }
+            } catch (YambaClientException e) { //
+                Log.e(TAG, "Failed to fetch the timeline", e);
+                e.printStackTrace();
             }
-        } catch (YambaClientException e) { //
-            Log.e(TAG, "Failed to fetch the timeline", e);
-            e.printStackTrace();
+            return;
         }
-        return;
 
        /* if (intent != null) {
             final String action = intent.getAction();
